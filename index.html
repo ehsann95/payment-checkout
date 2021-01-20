@@ -34,6 +34,7 @@
       class="btn btn-primary"
       data-toggle="modal"
       data-target="#exampleModal"
+      data-backdrop="static"
     >
       Proceed to Checkout
     </button>
@@ -52,7 +53,7 @@
     >
       <div class="modal-dialog" role="document">
         <div class="modal-content">
-          <div class="modal-header" style="background-color: #388fe9">
+          <div class="modal-header">
             <div class="header">
               <span>1500 SDG</span>
             </div>
@@ -72,9 +73,9 @@
                     <div class="text-center m-3">
                       <img src="./my-qr.svg" alt="qr" class="image-qr img-fluid img-thumbnail" />
                     </div>
-                    <div class="text-center m-3">
+                    <div class="text-center m-3 text-muted small">
                       Scan the code if you are a NOQOD customer 
-                      <hr />
+                    <br />
                       <span style="color: red; font-size: 1.2em">Or</span>
                       <br />
                       Enter your Card details below
@@ -108,14 +109,14 @@
                               id="card_expiry_mm"
                               type="text"
                               class="input-field"
-                              placeholder="MM"
+                              placeholder="MM/YY"
                               onkeyup="this.value=this.value.replace(/[^\d]/,'')"
                               oninput="this.value=this.value.slice(0,this.maxLength)"
-                              maxlength="2"
+                              maxlength="4"
                               class=""
                             />
                           </div>
-                          <div class="col-sm-6 col-6 col-md-6">
+                          <!-- <div class="col-sm-6 col-6 col-md-6">
                             <input
                               id="card_expiry_yy"
                               type="text"
@@ -126,8 +127,8 @@
                               maxlength="2"
                               class=""
                             />
-                          </div>
-                          <div class="col-sm-6 col-md-6">
+                          </div> -->
+                          <div class="col-sm-6 col-6 col-md-6">
                             <input
                               id="card_cvv"
                               type="text"
@@ -140,13 +141,13 @@
                             />
                           </div>
                         </div>
-                        <div class="mt-4 mb-4 text-center">
-                          <button class="btn btn-primary">PAY NOW</button>
+                        <div class="mt-3 mb-4 text-center">
+                          <button class="btn btn-primary btn-pay">PAY NOW</button>
                         </div>
                       </div>
                     </div>
                     <div class="row text-center">
-                      <div class="col-sm-6 mx-auto mb-2 footer">
+                      <div class="col-sm-6 mx-auto mb-2 footer text-muted small">
                         <span>Powered by </span>
                         <img
                           src="./noqod_logo--color.svg"
@@ -164,6 +165,15 @@
       </div>
     </div>
 
-    
+    <script>
+      function onSubmit() {
+        let str1 = month_year.value.slice(0,2)
+        let str2 = month_year.value.slice(2,4)
+        console.log(str1 + "/" + str2)
+      }
+      let month_year = document.getElementById('card_expiry_mm')
+      let pay_now =document.querySelector('.btn-pay')
+      pay_now.addEventListener('click', onSubmit)
+    </script>
   </body>
 </html>

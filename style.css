@@ -1,5 +1,4 @@
 .header {
-  background-color: #388fe9;
   font-weight: 600;
   font-size: 1.3em;
   color: #fff;
@@ -7,8 +6,11 @@
   left: 40%;
 }
 
+.modal-header {
+  background-color: #388fe9;
+}
+
 .image-qr {
-  height: 50%;
   width: 50%;
 }
 
@@ -23,26 +25,27 @@
   margin: 0.3em 0;
 }
 
-#card_expiry_mm,
-#card_expiry_yy {
+#card_expiry_mm {
   width: 100%;
 }
 
-.btn {
+.btn-pay {
   background-color: #46ce7c !important;
   border: none !important;
-  width: 40%;
-  height: 3em;
+  /* width: 40%; */
+  /* height: 2em; */
+  padding: 0.5em 2em !important;
   font-weight: 600;
 }
 
 ::placeholder {
   color: #cecece;
+  font-size: 0.75em;
 }
 
 .logo {
-  height: 30px !important;
-  width: 90px;
+  height: 20px !important;
+  /* width: 90px; */
 }
 
 .footer {
