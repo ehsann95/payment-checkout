@@ -1,0 +1,50 @@
+.header {
+  background-color: #388fe9;
+  font-weight: 600;
+  font-size: 1.3em;
+  color: #fff;
+  position: absolute;
+  left: 40%;
+}
+
+.image-qr {
+  height: 50%;
+  width: 50%;
+}
+
+.modal-body {
+  margin-top: -15px;
+}
+
+.input-field {
+  border: none;
+  width: 100%;
+  padding: 0.3em 0.8em;
+  margin: 0.3em 0;
+}
+
+#card_expiry_mm,
+#card_expiry_yy {
+  width: 100%;
+}
+
+.btn {
+  background-color: #46ce7c !important;
+  border: none !important;
+  width: 40%;
+  height: 3em;
+  font-weight: 600;
+}
+
+::placeholder {
+  color: #cecece;
+}
+
+.logo {
+  height: 30px !important;
+  width: 90px;
+}
+
+.footer {
+  font-size: 0.9em;
+}

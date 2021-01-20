@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./style.css" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
+    <title>Checkout</title>
+  </head>
+  <body>
+    <div class="m-3">
+      <button
+      type="button"
+      class="btn btn-primary"
+      data-toggle="modal"
+      data-target="#exampleModal"
+    >
+      Proceed to Checkout
+    </button>
+    </div>
+    <!-- Button trigger modal -->
+    
+
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="exampleModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header" style="background-color: #388fe9">
+            <div class="header">
+              <span>1500 SDG</span>
+            </div>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="">
+              <div class="row">
+                  <div class="col-sm-12 col-md-12" style="background-color: #eeeeee">
+                    <div class="text-center m-3">
+                      <img src="./my-qr.svg" alt="qr" class="image-qr img-fluid img-thumbnail" />
+                    </div>
+                    <div class="text-center m-3">
+                      Scan the code if you are a NOQOD customer 
+                      <hr />
+                      <span style="color: red; font-size: 1.2em">Or</span>
+                      <br />
+                      Enter your Card details below
+                    </div>
+
+                    <div class="row">
+                      <div class="col-sm-10 col-md-10 mx-auto">
+                        <div class="">
+                          <input
+                            type="text"
+                            id="name"
+                            class="input-field"
+                            placeholder="NAME ON CARD"
+                          />
+                        </div>
+                        <div class="">
+                          <!-- <label for="card-number">Card Number</label> -->
+                          <input
+                            type="text"
+                            class="input-field"
+                            placeholder="CARD NUMBER"
+                            id="card-number"
+                            onkeyup="this.value=this.value.replace(/[^\d]/,'')"
+                            oninput="this.value=this.value.slice(0,this.maxLength)"
+                            maxlength="16"
+                          />
+                        </div>
+                        <div class="row">
+                          <div class="col-sm-6 col-6 col-md-6">
+                            <input
+                              id="card_expiry_mm"
+                              type="text"
+                              class="input-field"
+                              placeholder="MM"
+                              onkeyup="this.value=this.value.replace(/[^\d]/,'')"
+                              oninput="this.value=this.value.slice(0,this.maxLength)"
+                              maxlength="2"
+                              class=""
+                            />
+                          </div>
+                          <div class="col-sm-6 col-6 col-md-6">
+                            <input
+                              id="card_expiry_yy"
+                              type="text"
+                              class="input-field"
+                              placeholder="YY"
+                              onkeyup="this.value=this.value.replace(/[^\d]/,'')"
+                              oninput="this.value=this.value.slice(0,this.maxLength)"
+                              maxlength="2"
+                              class=""
+                            />
+                          </div>
+                          <div class="col-sm-6 col-md-6">
+                            <input
+                              id="card_cvv"
+                              type="text"
+                              class="input-field"
+                              placeholder="IPIN*"
+                              onkeyup="this.value=this.value.replace(/[^\d]/,'')"
+                              oninput="this.value=this.value.slice(0,this.maxLength)"
+                              maxlength="4"
+                              class=""
+                            />
+                          </div>
+                        </div>
+                        <div class="mt-4 mb-4 text-center">
+                          <button class="btn btn-primary">PAY NOW</button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row text-center">
+                      <div class="col-sm-6 mx-auto mb-2 footer">
+                        <span>Powered by </span>
+                        <img
+                          src="./noqod_logo--color.svg"
+                          class="logo img-fluid"
+                          alt=""
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+  </body>
+</html>
