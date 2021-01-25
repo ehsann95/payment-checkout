@@ -90,6 +90,7 @@
                             class="input-field"
                             placeholder="NAME ON CARD"
                           />
+                          <span id="errorName"></span>
                         </div>
                         <div class="">
                           <!-- <label for="card-number">Card Number</label> -->
@@ -102,6 +103,7 @@
                             oninput="this.value=this.value.slice(0,this.maxLength)"
                             maxlength="16"
                           />
+                          <span id="errorCardNum"></span>
                         </div>
                         <div class="row">
                           <div class="col-sm-6 col-6 col-md-6">
@@ -110,8 +112,6 @@
                               type="text"
                               class="input-field"
                               placeholder="MM/YY"
-                              
-                              oninput="this.value=this.value.slice(0,this.maxLength)"
                               maxlength="5"
                               class=""
                             />
@@ -142,6 +142,7 @@
                               class=""
                             />
                           </div>
+                          <span id="errorCvv"></span>
                         </div>
                         <div class="mt-3 mb-4 text-center">
                           <button class="btn btn-primary btn-pay">PAY NOW</button>
@@ -175,6 +176,9 @@
       let cardCvv = document.getElementById('card_cvv')
       let pay_now =document.querySelector('.btn-pay')
       let error = document.getElementById("error")
+      let errorName = document.getElementById("errorName")
+      let errorCardNum = document.getElementById("errorCardNum")
+      let errorCvv = document.getElementById("errorCvv")
 
       function clearFields() {
         name.value="",
@@ -186,12 +190,23 @@
 
       closeBtn.addEventListener('click', clearFields)
 
+
       function onSubmit() {
-       console.log("successs")
+       if(name.value != ''&& cardNum != ''&& cardCvv.value != '' && month_year.value != '' ){
+         alert("Payment Success")
+         console.log("success")
+         clearFields()
+       }
+       else{
+         error.textContent= "all fields required"
+         error.style.color = "red" 
+          error.classList.add('small')
+       }
       }
 
       pay_now.addEventListener('click', onSubmit)
-      month_year.onkeydown = function(e){
+      
+      month_year.oninput = function(e){
         e.target.value= e.target.value.replace(/[^\d/]/,'')
       }
       month_year.onblur = function () { 
