@@ -35,6 +35,7 @@
       data-toggle="modal"
       data-target="#exampleModal"
       data-backdrop="static"
+      id="btn_chkout"
     >
       Proceed to Checkout
     </button>
@@ -70,9 +71,14 @@
             <div class="">
               <div class="row">
                   <div class="col-sm-12 col-md-12" style="background-color: #eeeeee">
-                    <div class="text-center m-3">
+                    <!-- <div class="text-center m-3">
                       <img src="./qrcode.png" alt="qr" class="image-qr img-fluid img-thumbnail" />
+                    </div> -->
+                     <!--  -->
+                     <div class="text-center m-3">
+                      <img id="myqr" src="" alt="qr" />
                     </div>
+                    <!--  -->
                     <div class="text-center m-3 text-muted small">
                       Scan the code if you are a NOQOD customer 
                     <br />
@@ -83,14 +89,16 @@
 
                     <div class="row">
                       <div class="col-sm-10 col-md-10 mx-auto">
+                        <form>
                         <div class="">
                           <input
                             type="text"
                             id="name"
                             class="input-field"
                             placeholder="NAME ON CARD"
+                            required
                           />
-                          <span id="errorName"></span>
+                          <span class="small" id="errorName"></span>
                         </div>
                         <div class="">
                           <!-- <label for="card-number">Card Number</label> -->
@@ -101,23 +109,27 @@
                             id="card-number"
                             onkeyup="this.value=this.value.replace(/[^\d]/,'')"
                             oninput="this.value=this.value.slice(0,this.maxLength)"
+                            minlength="16"
                             maxlength="16"
+                            required
                           />
-                          <span id="errorCardNum"></span>
+                          <span class="small" id="errorCardNum"></span>
                         </div>
                         <div class="row">
-                          <div class="col-sm-6 col-6 col-md-6">
+                          <div class="col-sm-3 col-3 col-md-3">
                             <input
                               id="card_expiry_mm"
                               type="text"
                               class="input-field"
-                              placeholder="MM/YY"
-                              maxlength="5"
-                              class=""
+                              placeholder="MM"
+                              onkeyup="this.value=this.value.replace(/[^\d]/,'')"
+                              
+                              maxlength="2"
+                              required
                             />
-                            <span id="error"></span>
+                            <span class="small" id="errorMM"></span>
                           </div>
-                          <!-- <div class="col-sm-6 col-6 col-md-6">
+                          <div class="col-sm-3 col-3 col-md-3">
                             <input
                               id="card_expiry_yy"
                               type="text"
@@ -125,11 +137,12 @@
                               onkeyup="this.value=this.value.replace(/[^\d]/,'')"
                               placeholder="YY"
                               onkeyup="this.value=this.value.replace(/[^\d]/,'')"
-                              oninput="this.value=this.value.slice(0,this.maxLength)"
+
                               maxlength="2"
-                              class=""
+                              required
                             />
-                          </div> -->
+                            <span class="small" id="errorYY"></span>
+                          </div>
                           <div class="col-sm-6 col-6 col-md-6">
                             <input
                               id="card_cvv"
@@ -139,16 +152,28 @@
                               onkeyup="this.value=this.value.replace(/[^\d]/,'')"
                               oninput="this.value=this.value.slice(0,this.maxLength)"
                               maxlength="4"
-                              class=""
+                              required
                             />
+                            <span class="small" id="errorCvv"></span>
                           </div>
-                          <span id="errorCvv"></span>
                         </div>
                         <div class="mt-3 mb-4 text-center">
                           <button class="btn btn-primary btn-pay">PAY NOW</button>
                         </div>
+                      </form>
                       </div>
                     </div>
+
+                    <!-- ERROR -->
+                    <div class="row text-center">
+                      <div class="col-sm-12 mx-auto mb-2 text-muted small">
+                        <span id="error"></span>
+                        
+                      </div>
+                    </div>
+
+                    <!--  -->
+                    
                     <div class="row text-center">
                       <div class="col-sm-6 mx-auto mb-2 footer text-muted small">
                         <span>Powered by </span>
@@ -169,69 +194,182 @@
     </div>
 
     <script>
+      // DOM ELEMENTS
       let closeBtn = document.getElementById('closeModal')
       let name = document.getElementById('name')
       let cardNum = document.getElementById('card-number')
-      let month_year = document.getElementById('card_expiry_mm')
+      let month = document.getElementById('card_expiry_mm')
+      let year = document.getElementById('card_expiry_yy')
       let cardCvv = document.getElementById('card_cvv')
       let pay_now =document.querySelector('.btn-pay')
-      let error = document.getElementById("error")
+      let errorMM = document.getElementById("errorMM")
+      let errorYY = document.getElementById("errorYY")
       let errorName = document.getElementById("errorName")
       let errorCardNum = document.getElementById("errorCardNum")
       let errorCvv = document.getElementById("errorCvv")
+      let checkoutBtn = document.getElementById("btn_chkout")
+      let QRImg = document.getElementById("myqr")
+      
+      // EVENT LISTENERS
+      closeBtn.addEventListener('click', clearFields)
+      pay_now.addEventListener('click', onSubmit)
+      checkoutBtn.addEventListener('click', getQR)
+      cardNum.addEventListener('blur', checkCardNum)
+      name.oninput = function() {
+        errorName.textContent = ""
+      }
+
+      month.oninput = function(e) {
+        errorMM.textContent = ""
+        if(e.target.value >12 ){
+          e.target.value= 12
+        }
+      }
+
+      year.oninput = function() {
+        errorYY.textContent = ""
+      }
+
+      cardCvv.oninput = function() {
+        errorCvv.textContent = ""
+      }
+
+      function checkCardNum(e){
+        console.log(e.target.value.length)
+        if(e.target.value.length < 16) {
+          errorCardNum.textContent="card number must be 16 char long"
+          errorCardNum.style.color = "red" 
+          errorCardNum.classList.add('small')
+        }
+        else {
+          errorCardNum.textContent=""
+        }
+      }
 
       function clearFields() {
         name.value="",
         cardNum.value="",
-        month_year.value="",
+        month.value="",
+        year.value=""
         cardCvv.value=""
         error.textContent =""
+        errorCardNum.textContent=""
       }
 
-      closeBtn.addEventListener('click', clearFields)
+      function validate(){
+        if(name.value == ''){
+          errorName.textContent = "Name required"
+          errorName.style.color = "red" 
+        }
+        else if(cardNum.value.length < 16){
+          errorCardNum.textContent = "Card Number required"
+          errorCardNum.style.color = "red" 
+        }
+        else if(month.value == ''){
+          errorMM.textContent = "month required"
+          errorMM.style.color = "red" 
+        }
+        else if(year.value == ''){
+          errorYY.textContent = "Year required"
+          errorYY.style.color = "red" 
+        } 
+        else if(cardCvv.value == ''){
+          errorCvv.textContent = "IPIN required"
+          errorCvv.style.color = "red" 
+        }
+        else {
 
+        }
+      }
 
-      function onSubmit() {
-       if(name.value != ''&& cardNum != ''&& cardCvv.value != '' && month_year.value != '' ){
-         alert("Payment Success")
-         console.log("success")
+      function onSubmit(e) {
+        e.preventDefault()
+        validate()
+        const data = {
+    "nameOnCard":"Azmat Fayaz",
+    "cardNumber": "Bd5DQT3lz4YtdjVDcIt11keifDGIT990eYSaDclRHF6KGAXKbTIV5TZ/mqgimRE6lyhZd1Fd8+i0no2BW/i9N5HIAwXX0UKeIz9QZdJEvllWmITfwMQiNv6sLRVzxjWLmE/ReYw8ivclPIRiKfarzp63XT5mWnlr9jKD0Zuo/GlpTWb96Zv6XFZFvyEKgxf1t95oL0pMURSrv7ANI6ikeiyf58zpNziW2Kqbth0yogCz5EToa94Wscj4tcAnlZa+JkdcLS+AAnhoMl9tS+nDLCQ37OmapMbaeKQMRQzQrRCp/mT876gFy+Z9mut3+Wv8bpyCkoRjwJrbVOI/oX8pxQ==",
+    "expDate": "11/22",
+    "IPIN": "Bd5DQT3lz4YtdjVDcIt11keifDGIT990eYSaDclRHF6KGAXKbTIV5TZ/mqgimRE6lyhZd1Fd8+i0no2BW/i9N5HIAwXX0UKeIz9QZdJEvllWmITfwMQiNv6sLRVzxjWLmE/ReYw8ivclPIRiKfarzp63XT5mWnlr9jKD0Zuo/GlpTWb96Zv6XFZFvyEKgxf1t95oL0pMURSrv7ANI6ikeiyf58zpNziW2Kqbth0yogCz5EToa94Wscj4tcAnlZa+JkdcLS+AAnhoMl9tS+nDLCQ37OmapMbaeKQMRQzQrRCp/mT876gFy+Z9mut3+Wv8bpyCkoRjwJrbVOI/oX8pxQ==",
+    "mobileNo": "9906123456",
+    "amount": "20",
+    "merchantId": "7006911868"
+}
+
+       if(name.value != '' && cardNum.value.length == 16 && cardCvv.value != '' && month.value != '' && year.value != '' ){       
+         fetch('https://backoffice.noqod.sd/gateway/v1/expressTransfer',{
+          method: 'POST', // or 'PUT'
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': "Bearer 722840f1b09ed563ac8b74b14dce3d3d9bb11c392dafabced4ef0188beb9e237313f0aa027cdd5ff90cd50832359981473087be5a4216a6c7fb674e6f2736a76"
+          },
+          body: JSON.stringify(data),
+         })
+         .then(response => response.json())
+         .then(data => {
+           alert("Payment Success")
+           $('#exampleModal').modal('hide')
+
+           console.log(data)
+           })
+         .catch(err => console.log(err))
+
          clearFields()
        }
        else{
+
+         setTimeout(() => {
+          error.textContent= ""
+         }, 3000);
+
          error.textContent= "all fields required"
          error.style.color = "red" 
-          error.classList.add('small')
+        error.classList.add('small')
        }
       }
 
-      pay_now.addEventListener('click', onSubmit)
       
-      month_year.oninput = function(e){
-        e.target.value= e.target.value.replace(/[^\d/]/,'')
-      }
-      month_year.onblur = function () { 
-        let check = /^\d{2}\/\d{2}$/.test(month_year.value)
-        if (!check)  
-        { 
-              console.log(month_year.value)
-            // Changing content and color of content 
-            error.textContent = "Please enter a valid expiry(mm/yy)" 
-            error.style.color = "red" 
-            error.classList.add('small')
-        } else { 
-            error.textContent = "" 
-        } 
-    } 
+  
+
+    //   month.onblur = function () { 
+    //     let check = /^\d{2}\/\d{2}$/.test(month_year.value)
+    //     if (!check)  
+    //     { 
+    //           console.log(month_year.value)
+    //         // Changing content and color of content 
+    //         error.textContent = "Please enter a valid expiry(mm/yy)" 
+    //         error.style.color = "red" 
+    //         error.classList.add('small')
+    //     } else { 
+    //         error.textContent = "" 
+    //     } 
+    // } 
+
       
-      month_year.onkeyup = function (e) {
+      function getQR() {
+        let qr=''
+        const data = {
+          "merchantId": "7006911868",
+          "amount": "20",
+          "expiry": "11/22"
+        }
+        fetch('https://backoffice.noqod.sd/gateway/v1/dynamicQR', {
+          method: 'POST', // or 'PUT'
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': "Bearer 722840f1b09ed563ac8b74b14dce3d3d9bb11c392dafabced4ef0188beb9e237313f0aa027cdd5ff90cd50832359981473087be5a4216a6c7fb674e6f2736a76"
+          },
+          body: JSON.stringify(data),
+        })
+        .then(response => response.json())
+        .then(data => {
+           qr = data.data.QR
+          console.log('Success:', qr);
+          QRImg.src = ` https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qr}`
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
         
-        if(e.key === 'Backspace'){
-          e.target.value.length -= 1
-        }
-        else if(e.target.value.length === 2){
-          let val = e.target.value + '/'
-           e.target.value = val
-        }
       }
 
     </script>
