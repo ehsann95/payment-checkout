@@ -39,7 +39,6 @@
       Proceed to Checkout
     </button>
     </div>
-    <!-- Button trigger modal -->
     
 
     <!-- Modal -->
@@ -58,6 +57,7 @@
               <span>1500 SDG</span>
             </div>
             <button
+            id="closeModal"
               type="button"
               class="close"
               data-dismiss="modal"
@@ -115,6 +115,7 @@
                               maxlength="5"
                               class=""
                             />
+                            <span id="error"></span>
                           </div>
                           <!-- <div class="col-sm-6 col-6 col-md-6">
                             <input
@@ -132,7 +133,7 @@
                           <div class="col-sm-6 col-6 col-md-6">
                             <input
                               id="card_cvv"
-                              type="text"
+                              type="password"
                               class="input-field"
                               placeholder="IPIN*"
                               onkeyup="this.value=this.value.replace(/[^\d]/,'')"
@@ -167,21 +168,47 @@
     </div>
 
     <script>
-      function onSubmit() {
-        let str1 = month_year.value.slice(0,2)
-        let str2 = month_year.value.slice(2,4)
-        console.log(str1 + "/" + str2)
-      }
+      let closeBtn = document.getElementById('closeModal')
+      let name = document.getElementById('name')
+      let cardNum = document.getElementById('card-number')
       let month_year = document.getElementById('card_expiry_mm')
+      let cardCvv = document.getElementById('card_cvv')
       let pay_now =document.querySelector('.btn-pay')
-      pay_now.addEventListener('click', onSubmit)
-      
-      
-      month_year.onkeyup = function(e){
-        e.target.value= e.target.value.replace(/[^\d/]/,'')
+      let error = document.getElementById("error")
+
+      function clearFields() {
+        name.value="",
+        cardNum.value="",
+        month_year.value="",
+        cardCvv.value=""
+        error.textContent =""
       }
 
-      month_year.onkeydown = function (e) {
+      closeBtn.addEventListener('click', clearFields)
+
+      function onSubmit() {
+       console.log("successs")
+      }
+
+      pay_now.addEventListener('click', onSubmit)
+      month_year.onkeydown = function(e){
+        e.target.value= e.target.value.replace(/[^\d/]/,'')
+      }
+      month_year.onblur = function () { 
+        let check = /^\d{2}\/\d{2}$/.test(month_year.value)
+        if (!check)  
+        { 
+              console.log(month_year.value)
+            // Changing content and color of content 
+            error.textContent = "Please enter a valid expiry(mm/yy)" 
+            error.style.color = "red" 
+            error.classList.add('small')
+        } else { 
+            error.textContent = "" 
+        } 
+    } 
+      
+      month_year.onkeyup = function (e) {
         
         if(e.key === 'Backspace'){
           e.target.value.length -= 1
