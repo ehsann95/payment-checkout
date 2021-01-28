@@ -25,6 +25,10 @@
       integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
       crossorigin="anonymous"
     ></script>
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/2.3.1/jsencrypt.min.js" integrity="sha512-zDvrqenA0eFJZCxBsryzUZcvihvNlEXbteMv62yRxdhR4s7K1aaz+LjsRyfk6M+YJLyAJEuuquIAI8I8GgLC8A==" crossorigin="anonymous"></script>
+
     <title>Checkout</title>
   </head>
   <body>
@@ -70,13 +74,14 @@
           <div class="modal-body">
             <div class="">
               <div class="row">
-                  <div class="col-sm-12 col-md-12" style="background-color: #eeeeee">
+                  <div class="col-sm-12 col-md-12" id="paymentSuccess" style="background-color: #eeeeee">
                     <!-- <div class="text-center m-3">
                       <img src="./qrcode.png" alt="qr" class="image-qr img-fluid img-thumbnail" />
                     </div> -->
                      <!--  -->
+
                      <div class="text-center m-3">
-                      <img id="myqr" src="" alt="qr" />
+                      <img id="myqr" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=noqod" alt="qr" />
                     </div>
                     <!--  -->
                     <div class="text-center m-3 text-muted small">
@@ -110,7 +115,7 @@
                             onkeyup="this.value=this.value.replace(/[^\d]/,'')"
                             oninput="this.value=this.value.slice(0,this.maxLength)"
                             minlength="16"
-                            maxlength="16"
+                            maxlength="19"
                             required
                           />
                           <span class="small" id="errorCardNum"></span>
@@ -210,6 +215,8 @@
       let checkoutBtn = document.getElementById("btn_chkout")
       let QRImg = document.getElementById("myqr")
       
+      let payment_data = {}
+
       // EVENT LISTENERS
       closeBtn.addEventListener('click', clearFields)
       pay_now.addEventListener('click', onSubmit)
@@ -221,7 +228,7 @@
 
       month.oninput = function(e) {
         errorMM.textContent = ""
-        if(e.target.value >12 ){
+        if(e.target.value > 12 ){
           e.target.value= 12
         }
       }
@@ -235,9 +242,9 @@
       }
 
       function checkCardNum(e){
-        console.log(e.target.value.length)
+        
         if(e.target.value.length < 16) {
-          errorCardNum.textContent="card number must be 16 char long"
+          errorCardNum.textContent="Card Number should be atleast 16 char long"
           errorCardNum.style.color = "red" 
           errorCardNum.classList.add('small')
         }
@@ -262,7 +269,7 @@
           errorName.style.color = "red" 
         }
         else if(cardNum.value.length < 16){
-          errorCardNum.textContent = "Card Number required"
+          errorCardNum.textContent = "Card Number should be atleast 16 char long"
           errorCardNum.style.color = "red" 
         }
         else if(month.value == ''){
@@ -285,31 +292,57 @@
       function onSubmit(e) {
         e.preventDefault()
         validate()
-        const data = {
-    "nameOnCard":"Azmat Fayaz",
-    "cardNumber": "Bd5DQT3lz4YtdjVDcIt11keifDGIT990eYSaDclRHF6KGAXKbTIV5TZ/mqgimRE6lyhZd1Fd8+i0no2BW/i9N5HIAwXX0UKeIz9QZdJEvllWmITfwMQiNv6sLRVzxjWLmE/ReYw8ivclPIRiKfarzp63XT5mWnlr9jKD0Zuo/GlpTWb96Zv6XFZFvyEKgxf1t95oL0pMURSrv7ANI6ikeiyf58zpNziW2Kqbth0yogCz5EToa94Wscj4tcAnlZa+JkdcLS+AAnhoMl9tS+nDLCQ37OmapMbaeKQMRQzQrRCp/mT876gFy+Z9mut3+Wv8bpyCkoRjwJrbVOI/oX8pxQ==",
-    "expDate": "11/22",
-    "IPIN": "Bd5DQT3lz4YtdjVDcIt11keifDGIT990eYSaDclRHF6KGAXKbTIV5TZ/mqgimRE6lyhZd1Fd8+i0no2BW/i9N5HIAwXX0UKeIz9QZdJEvllWmITfwMQiNv6sLRVzxjWLmE/ReYw8ivclPIRiKfarzp63XT5mWnlr9jKD0Zuo/GlpTWb96Zv6XFZFvyEKgxf1t95oL0pMURSrv7ANI6ikeiyf58zpNziW2Kqbth0yogCz5EToa94Wscj4tcAnlZa+JkdcLS+AAnhoMl9tS+nDLCQ37OmapMbaeKQMRQzQrRCp/mT876gFy+Z9mut3+Wv8bpyCkoRjwJrbVOI/oX8pxQ==",
-    "mobileNo": "9906123456",
-    "amount": "20",
-    "merchantId": "7006911868"
-}
+        
+        // var public_key = '-----BEGIN PUBLIC KEY-----';
+        // public_key += 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvaZcEWP2XBcu1DQPkVF1';
+        // public_key += 'Avs+88MRTHcVpjTFJFzkWyw7DyDggPTUwkO7eqMtAx6DTFHCqMz6msgyu9eVBdp6';
+        // public_key += '6um7xUXVefV88aep8T8aN2BrltDS3QsfmcR/sjxJWJ6Hl0+p5H+iUXF6YBBs2SO4';
+        // public_key += 'K/EEPf14CW/rBx/GVwVNgpi409ldHcH9eo6KRjebBU379oHozJ2OBTaegx4XtIuw';
+        // public_key += 'qWcbsPwOVsPSO+oVnb9d09+Bv/3yrapNUPBMD7tgJZd+rC7iPzYWNKsjYEbarMnZ';
+        // public_key += 'jrSVFjGxLUkVvFufgza5IvkNxXkMSLIgjAx/acSCgSUyvH+GNk9+cGW4r/mdYIpd';
+        // public_key += '8wIDAQAB';
+        // public_key += '-----END PUBLIC KEY-----';
+        var key = `-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvaZcEWP2XBcu1DQPkVF1
+Avs+88MRTHcVpjTFJFzkWyw7DyDggPTUwkO7eqMtAx6DTFHCqMz6msgyu9eVBdp6
+6um7xUXVefV88aep8T8aN2BrltDS3QsfmcR/sjxJWJ6Hl0+p5H+iUXF6YBBs2SO4
+K/EEPf14CW/rBx/GVwVNgpi409ldHcH9eo6KRjebBU379oHozJ2OBTaegx4XtIuw
+qWcbsPwOVsPSO+oVnb9d09+Bv/3yrapNUPBMD7tgJZd+rC7iPzYWNKsjYEbarMnZ
+jrSVFjGxLUkVvFufgza5IvkNxXkMSLIgjAx/acSCgSUyvH+GNk9+cGW4r/mdYIpd
+8wIDAQAB
+-----END PUBLIC KEY-----`
+        var encrypt = new JSEncrypt();
+        encrypt.setPublicKey(key);
+        var encryptedCardNumber = encrypt.encrypt(cardNum.value);
+        var encrytedIPIN = encrypt.encrypt(cardCvv.value)
+        console.log("Encryted CARD ++++ ",encryptedCardNumber);
+        console.log("Encryted IPIN +++++ ",encrytedIPIN);
 
-       if(name.value != '' && cardNum.value.length == 16 && cardCvv.value != '' && month.value != '' && year.value != '' ){       
+        const formData = {
+          "nameOnCard": name.value,
+          "cardNumber": encryptedCardNumber,
+          "expDate": month.value + '/' + year.value,
+          "IPIN": encrytedIPIN,
+          "mobileNo": "9906123456",
+          "amount": "20",
+          "merchantId": "7006911868"
+        }
+
+       if(name.value != '' && cardNum.value.length >=16 && cardCvv.value != '' && month.value != '' && year.value != '' ){       
          fetch('https://backoffice.noqod.sd/gateway/v1/expressTransfer',{
           method: 'POST', // or 'PUT'
           headers: {
             'Content-Type': 'application/json',
             'Authorization': "Bearer 722840f1b09ed563ac8b74b14dce3d3d9bb11c392dafabced4ef0188beb9e237313f0aa027cdd5ff90cd50832359981473087be5a4216a6c7fb674e6f2736a76"
           },
-          body: JSON.stringify(data),
+          body: JSON.stringify(formData),
          })
          .then(response => response.json())
          .then(data => {
+           console.log(data)
+           document.getElementById('paymentSuccess')
            alert("Payment Success")
            $('#exampleModal').modal('hide')
-
-           console.log(data)
            })
          .catch(err => console.log(err))
 
@@ -323,10 +356,10 @@
 
          error.textContent= "all fields required"
          error.style.color = "red" 
-        error.classList.add('small')
-       }
+         error.classList.add('small')
+        }
       }
-
+      
       
   
 
@@ -362,16 +395,16 @@
         })
         .then(response => response.json())
         .then(data => {
+          data = data
            qr = data.data.QR
           console.log('Success:', qr);
-          QRImg.src = ` https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qr}`
+          QRImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qr}`
         })
         .catch((error) => {
           console.error('Error:', error);
         });
-        
       }
-
     </script>
+    
   </body>
 </html>
