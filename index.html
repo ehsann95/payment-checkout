@@ -10,6 +10,10 @@
       integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
       crossorigin="anonymous"
     />
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
     <script
       src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
       integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
@@ -74,11 +78,15 @@
           <div class="modal-body">
             <div class="">
               <div class="row">
+                <div class="col-sm-12 col-md-12" id="afterPay"></div>
+                <div class="col-sm-12 col-md-12" id="afterPayFail"></div>
+
                   <div class="col-sm-12 col-md-12" id="paymentSuccess" style="background-color: #eeeeee">
                     <!-- <div class="text-center m-3">
                       <img src="./qrcode.png" alt="qr" class="image-qr img-fluid img-thumbnail" />
                     </div> -->
                      <!--  -->
+
 
                      <div class="text-center m-3">
                       <img id="myqr" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=noqod" alt="qr" />
@@ -128,7 +136,7 @@
                               class="input-field"
                               placeholder="MM"
                               onkeyup="this.value=this.value.replace(/[^\d]/,'')"
-                              
+                              minlength="2"
                               maxlength="2"
                               required
                             />
@@ -142,7 +150,7 @@
                               onkeyup="this.value=this.value.replace(/[^\d]/,'')"
                               placeholder="YY"
                               onkeyup="this.value=this.value.replace(/[^\d]/,'')"
-
+                              minlength="2"
                               maxlength="2"
                               required
                             />
@@ -165,6 +173,7 @@
                         <div class="mt-3 mb-4 text-center">
                           <button class="btn btn-primary btn-pay">PAY NOW</button>
                         </div>
+                        
                       </form>
                       </div>
                     </div>
@@ -176,7 +185,6 @@
                         
                       </div>
                     </div>
-
                     <!--  -->
                     
                     <div class="row text-center">
@@ -254,13 +262,24 @@
       }
 
       function clearFields() {
-        name.value="",
-        cardNum.value="",
-        month.value="",
+        name.value=""
+        cardNum.value=""
+        month.value=""
         year.value=""
         cardCvv.value=""
         error.textContent =""
+        errorName.textContent=""
         errorCardNum.textContent=""
+        errorMM.textContent=""
+        errorYY.textContent=""
+        errorCvv.textContent=""
+
+        document.getElementById('afterPay').innerHTML = ''
+        document.getElementById('afterPayFail').innerHTML = ''
+        document.getElementById('paymentSuccess').style.display="block"
+        document.querySelector('.btn-pay').innerHTML = "PAY NOW"
+
+        pay_now.disabled = false
       }
 
       function validate(){
@@ -328,7 +347,7 @@ jrSVFjGxLUkVvFufgza5IvkNxXkMSLIgjAx/acSCgSUyvH+GNk9+cGW4r/mdYIpd
           "merchantId": "7006911868"
         }
 
-       if(name.value != '' && cardNum.value.length >=16 && cardCvv.value != '' && month.value != '' && year.value != '' ){       
+       if(name.value != '' && cardNum.value.length >=16 && cardCvv.value.length >= 3 && month.value.length == 2 && year.value.length == 2 ){       
          fetch('https://backoffice.noqod.sd/gateway/v1/expressTransfer',{
           method: 'POST', // or 'PUT'
           headers: {
@@ -340,11 +359,36 @@ jrSVFjGxLUkVvFufgza5IvkNxXkMSLIgjAx/acSCgSUyvH+GNk9+cGW4r/mdYIpd
          .then(response => response.json())
          .then(data => {
            console.log(data)
-           document.getElementById('paymentSuccess')
-           alert("Payment Success")
-           $('#exampleModal').modal('hide')
+           pay_now.disabled = true;
+           pay_now.innerHTML = `
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              Paying...
+            `
+           setTimeout(()=>{
+            document.getElementById('paymentSuccess').style.display="none"
+            document.getElementById('afterPay').innerHTML = `<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; color: green; height: 400px">
+              <h1>
+                <i class="fa fa-check-circle fa-3x" aria-hidden="true"></i>
+              </h1>
+              <h3>Payment Success</h3>
+              <p class="muted">Transaction Id: ${data.data.transactionId}</p>
+            </div>`
+
+          //  $('#exampleModal').modal('hide')
+           },3000)
+          
            })
-         .catch(err => console.log(err))
+         .catch(err => {
+           console.log(err)
+           document.getElementById('paymentSuccess').style.display="none"
+           document.getElementById('afterPayFail').innerHTML = `<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; color: red; height: 400px">
+            <h1>
+              <i class="fa fa-times-circle fa-3x" aria-hidden="true"></i>
+            </h1>
+            <h3>Payment Failed</h3>
+            <p class="muted">${err}</p>
+          </div>`
+           })
 
          clearFields()
        }
@@ -383,7 +427,7 @@ jrSVFjGxLUkVvFufgza5IvkNxXkMSLIgjAx/acSCgSUyvH+GNk9+cGW4r/mdYIpd
         const data = {
           "merchantId": "7006911868",
           "amount": "20",
-          "expiry": "11/22"
+          "expiry": "2022-11-19T20:20:40+00:00"
         }
         fetch('https://backoffice.noqod.sd/gateway/v1/dynamicQR', {
           method: 'POST', // or 'PUT'
