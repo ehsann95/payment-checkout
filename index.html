@@ -387,6 +387,7 @@
            console.log(data)
            let transactionId = data.data.transactionId
            let orderId = data.data.orderId
+           let payCapture = data.data.paymentCapture
            pay_now.disabled = true;
            pay_now.innerHTML = `
               <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -439,8 +440,8 @@
            },3000)
 
            setTimeout(()=> {
-           window.location.href = `${params.url}?transactionId=${transactionId}&orderId=${orderId}` 
-          // window.location.href = `http://127.0.0.1:5501/index.html?transactionId=${transactionId}&orderId=${orderId}` 
+           window.location.href = `${params.url}?transactionId=${transactionId}&orderId=${orderId}&paymentCapture=${payCapture}` 
+          // window.location.href = `http://127.0.0.1:5501/index.html?transactionId=${transactionId}&orderId=${orderId}&paymentCapture=${payCapture}` 
 
            },10000)
            
