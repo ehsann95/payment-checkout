@@ -37,7 +37,7 @@
   </head>
   <body>
     <div class="m-3">
-      <button
+      <!-- <button
       type="button"
       class="btn btn-primary"
       data-toggle="modal"
@@ -46,10 +46,20 @@
       id="btn_chkout"
     >
       Proceed to Checkout
-    </button>
+      </button> -->
     </div>
 
     <div id="errorIntegration"></div>    
+
+    <div id="loader">
+      <div style="height: 50vh" class="d-flex justify-content-center align-items-center">
+        <div class="d-flex justify-content-center" >
+          <div class="spinner-border" role="status" style="width: 5rem; height: 5rem;">
+            <span class="sr-only">Loading...</span>
+          </div>
+        </div>
+      <div>
+    </div>
 
     <!-- Modal -->
     <div
@@ -59,6 +69,7 @@
       role="dialog"
       aria-labelledby="exampleModalLabel"
       aria-hidden="true"
+      data-backdrop="static"
     >
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -67,7 +78,7 @@
               <span id="amount">1500 SDG</span>
             </div>
             <button
-            id="closeModal"
+              id="closeModal"
               type="button"
               class="close"
               data-dismiss="modal"
@@ -231,12 +242,11 @@
       let QRImg = document.getElementById("myqr")
       let amountText = document.getElementById('amount')
       let modalForm = document.getElementById('paymentSuccess')
-      let payment_data = {}
 
       // EVENT LISTENERS
       closeBtn.addEventListener('click', clearFields)
       pay_now.addEventListener('click', onSubmit)
-      checkoutBtn.addEventListener('click', sendParams)
+      // checkoutBtn.addEventListener('click', sendParams)
       cardNum.addEventListener('blur', checkCardNum)
       name.oninput = function() {
         errorName.textContent = ""
@@ -319,8 +329,8 @@
 
       function sendParams() {
         // https://eager-villani-4e5c4e.netlify.app/
-        window.location.href =
-          window.location.href + "?merchantId=7006911868&amount=20&callback=https://eager-villani-4e5c4e.netlify.app/";
+        // window.location.href =
+        //   window.location.href + "?merchantId=7006911868&amount=20&callback=https://eager-villani-4e5c4e.netlify.app/";
       }
 
       function onSubmit(e) {
@@ -337,14 +347,14 @@
         // public_key += '8wIDAQAB';
         // public_key += '-----END PUBLIC KEY-----';
         var key = `-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvaZcEWP2XBcu1DQPkVF1
-Avs+88MRTHcVpjTFJFzkWyw7DyDggPTUwkO7eqMtAx6DTFHCqMz6msgyu9eVBdp6
-6um7xUXVefV88aep8T8aN2BrltDS3QsfmcR/sjxJWJ6Hl0+p5H+iUXF6YBBs2SO4
-K/EEPf14CW/rBx/GVwVNgpi409ldHcH9eo6KRjebBU379oHozJ2OBTaegx4XtIuw
-qWcbsPwOVsPSO+oVnb9d09+Bv/3yrapNUPBMD7tgJZd+rC7iPzYWNKsjYEbarMnZ
-jrSVFjGxLUkVvFufgza5IvkNxXkMSLIgjAx/acSCgSUyvH+GNk9+cGW4r/mdYIpd
-8wIDAQAB
------END PUBLIC KEY-----`
+                  MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvaZcEWP2XBcu1DQPkVF1
+                  Avs+88MRTHcVpjTFJFzkWyw7DyDggPTUwkO7eqMtAx6DTFHCqMz6msgyu9eVBdp6
+                  6um7xUXVefV88aep8T8aN2BrltDS3QsfmcR/sjxJWJ6Hl0+p5H+iUXF6YBBs2SO4
+                  K/EEPf14CW/rBx/GVwVNgpi409ldHcH9eo6KRjebBU379oHozJ2OBTaegx4XtIuw
+                  qWcbsPwOVsPSO+oVnb9d09+Bv/3yrapNUPBMD7tgJZd+rC7iPzYWNKsjYEbarMnZ
+                  jrSVFjGxLUkVvFufgza5IvkNxXkMSLIgjAx/acSCgSUyvH+GNk9+cGW4r/mdYIpd
+                  8wIDAQAB
+                  -----END PUBLIC KEY-----`
         var encrypt = new JSEncrypt();
         encrypt.setPublicKey(key);
         var encryptedCardNumber = encrypt.encrypt(cardNum.value);
@@ -359,7 +369,8 @@ jrSVFjGxLUkVvFufgza5IvkNxXkMSLIgjAx/acSCgSUyvH+GNk9+cGW4r/mdYIpd
           "IPIN": encrytedIPIN,
           "mobileNo": "9906123456",
           "amount": params.amt,
-          "merchantId": params.id
+          "merchantId": params.id,
+          "orderId": params.order
         }
 
        if(name.value != '' && cardNum.value.length >=16 && cardCvv.value.length >= 3 && month.value.length == 2 && year.value.length == 2 ){       
@@ -383,21 +394,55 @@ jrSVFjGxLUkVvFufgza5IvkNxXkMSLIgjAx/acSCgSUyvH+GNk9+cGW4r/mdYIpd
             `
            setTimeout(()=>{
             modalForm.style.display="none"
-            document.getElementById('afterPay').innerHTML = `<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; color: green; height: 400px">
-              <h1>
-                <i class="fa fa-check-circle fa-3x" aria-hidden="true"></i>
-              </h1>
-              <h3>Payment Success</h3>
-              <p class="muted">Transaction Id: ${data.data.transactionId}</p>
-            </div>`
+            if(data.statusCode == '202'){
+            // document.getElementById('afterPay').innerHTML = `<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; color: green; height: 400px">
+            //   <h1>
+            //     <i class="fa fa-check-circle fa-3x" aria-hidden="true"></i>
+            //   </h1>
+            //   <h3>Payment Success</h3>
+            //   <p class="muted">Transaction Id: ${data.data.transactionId}</p>
+            // </div>`
+
+          //  $('#exampleModal').modal('hide')
+            document.getElementById('afterPay').innerHTML = `
+              <div style="height: 50vh" class="d-flex justify-content-center align-items-center">
+                <div class="d-flex justify-content-center" >
+                  <div class="spinner-border" role="status" style="width: 5rem; height: 5rem;">
+                    <span class="sr-only">Loading...</span>
+                  </div>
+                </div>
+              <div>
+            `
+            }
+            else {
+              // document.getElementById('afterPayFail').innerHTML = `<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; color: red; height: 400px">
+              //   <h1>
+              //     <i class="fa fa-times-circle fa-3x" aria-hidden="true"></i>
+              //   </h1>
+              //   <h3>Payment Failed</h3>
+              //   <p class="muted">${err}</p>
+              // </div>`
+
+            document.getElementById('afterPayFail').innerHTML = `
+              <div style="height: 50vh" class="d-flex justify-content-center align-items-center">
+                <div class="d-flex justify-content-center" >
+                  <div class="spinner-border" role="status" style="width: 5rem; height: 5rem;">
+                    <span class="sr-only">Loading...</span>
+                  </div>
+                </div>
+              <div>
+            `
+            }
+            
 
           //  $('#exampleModal').modal('hide')
            },3000)
+
            setTimeout(()=> {
            window.location.href = `${params.url}?transactionId=${transactionId}&orderId=${orderId}` 
           // window.location.href = `http://127.0.0.1:5501/index.html?transactionId=${transactionId}&orderId=${orderId}` 
 
-           },4000)
+           },10000)
            
           })
           //  window.location.replace("https://eager-villani-4e5c4e.netlify.app/")
@@ -432,11 +477,14 @@ jrSVFjGxLUkVvFufgza5IvkNxXkMSLIgjAx/acSCgSUyvH+GNk9+cGW4r/mdYIpd
         }
       }
 
-    function getParams (id, amt, url) {
+    function getParams (id, amt, order, url) {
         var merchantId = new RegExp("[\?&]" + id + "=([^&#]*)").exec(
           window.location.href
         );
         var amountResults = new RegExp("[\?&]" + amt + "=([^&#]*)").exec(
+          window.location.href
+        );
+        var orderId = new RegExp("[\?&]" + order + "=([^&#]*)").exec(
           window.location.href
         );
         var callback = new RegExp("[\?&]" + url + "=([^&#]*)").exec(
@@ -446,6 +494,7 @@ jrSVFjGxLUkVvFufgza5IvkNxXkMSLIgjAx/acSCgSUyvH+GNk9+cGW4r/mdYIpd
           return {
             id: merchantId[1],
             amt: amountResults[1],
+            order: orderId[1],
             url: callback[1]
           }
         }
@@ -486,7 +535,7 @@ jrSVFjGxLUkVvFufgza5IvkNxXkMSLIgjAx/acSCgSUyvH+GNk9+cGW4r/mdYIpd
     }
 
     window.addEventListener('DOMContentLoaded', (e) => {
-        params = getParams("merchantId","amount", "callback");
+        params = getParams("merchantId","amount", "orderId", "callback");
         amountText.textContent = params.amt ? params.amt + ' SDG' : '00 SDG'
         console.log(params)
         validateMerchant()
@@ -495,7 +544,6 @@ jrSVFjGxLUkVvFufgza5IvkNxXkMSLIgjAx/acSCgSUyvH+GNk9+cGW4r/mdYIpd
 
       
       function getQR() {
-
         let qr=''
         const data = {
           "merchantId": params.id,
@@ -512,8 +560,7 @@ jrSVFjGxLUkVvFufgza5IvkNxXkMSLIgjAx/acSCgSUyvH+GNk9+cGW4r/mdYIpd
         })
         .then(response => response.json())
         .then(data => {
-          data = data
-           qr = data.data.QR
+          qr = data.data.QR
           console.log('Success:', qr);
           QRImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qr}`
         })
